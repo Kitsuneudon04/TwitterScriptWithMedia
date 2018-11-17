@@ -45,7 +45,7 @@ namespace Twitter
         private static readonly string AuthorizationURL = "https://api.twitter.com/oauth/authenticate?oauth_token={0}";
         private static readonly string AccessTokenURL = "https://api.twitter.com/oauth/access_token";
 
-        //PINƒR[ƒh”­s‰æ–Ê‚É‰f‚é‚Æ‚«‚Ég‚¢‚Ü‚·
+        //PINã‚³ãƒ¼ãƒ‰ç™ºè¡Œç”»é¢ã«æ˜ ã‚‹ã¨ãã«ä½¿ã„ã¾ã™
         public static IEnumerator GetRequestToken(string consumerKey, string consumerSecret, RequestTokenCallback callback)
         {
             WWW web = WWWRequestToken(consumerKey, consumerSecret);
@@ -79,7 +79,7 @@ namespace Twitter
             }
         }
 
-        //PINƒR[ƒh‚É‚æ‚é“o˜^\¿‚Ì‚Ég‚¢‚Ü‚·
+        //PINã‚³ãƒ¼ãƒ‰ã«ã‚ˆã‚‹ç™»éŒ²ç”³è«‹ã®æ™‚ã«ä½¿ã„ã¾ã™
         public static void OpenAuthorizationPage(string requestToken)
         {
             Application.OpenURL(string.Format(AuthorizationURL, requestToken));
@@ -123,7 +123,7 @@ namespace Twitter
             }
         }
 
-        //ã‹L‚ÌGetRequestToken‚Åg‚¢‚Ü‚·
+        //ä¸Šè¨˜ã®GetRequestTokenã§ä½¿ã„ã¾ã™
         private static WWW WWWRequestToken(string consumerKey, string consumerSecret)
         {
             // Add data to the form to post.
@@ -143,7 +143,7 @@ namespace Twitter
             return new WWW(RequestTokenURL, form.data, headers);
         }
 
-        //ã‹L‚ÌOpenAuthorizationPage‚Åg‚¢‚Ü‚·
+        //ä¸Šè¨˜ã®OpenAuthorizationPageã§ä½¿ã„ã¾ã™
         private static WWW WWWAccessToken(string consumerKey, string consumerSecret, string requestToken, string pin)
         {
             // Need to fill body since Unity doesn't like an empty request body.
@@ -181,7 +181,7 @@ namespace Twitter
         private const string PostTweetURL = "https://api.twitter.com/1.1/statuses/update.json";
 
 
-        //ƒcƒC[ƒg‚ğs‚¢‚Ü‚·
+        //ãƒ„ã‚¤ãƒ¼ãƒˆã‚’è¡Œã„ã¾ã™
         public static IEnumerator PostTweet(string text, string consumerKey, string consumerSecret, AccessTokenResponse response, PostTweetCallback callback)
         {
             if (string.IsNullOrEmpty(text) || text.Length > 140)
@@ -230,11 +230,11 @@ namespace Twitter
             }
         }
 
-        //“®‰æƒƒfƒBƒA•t‚«‚ÌƒcƒC[ƒgURL
+        //ãƒ¡ãƒ‡ã‚£ã‚¢ä»˜ãã®ãƒ„ã‚¤ãƒ¼ãƒˆURL
         private const string UploadMediaURL = "https://upload.twitter.com/1.1/media/upload.json";
 
 
-        //‰æ‘œƒcƒC[ƒg
+        //ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ç”»åƒãƒ„ã‚¤ãƒ¼ãƒˆ
         public static IEnumerator PostTweetWithMedia(string text, string imagePath, string consumerKey, string consumerSecret, AccessTokenResponse response, PostTweetCallback callback)
         {
             if (string.IsNullOrEmpty(text) || text.Length > 140)
@@ -325,7 +325,7 @@ namespace Twitter
             }
         }
 
-        //Sprite‚©‚ç•ÏŠ·‚µ‚Ä‰æ‘œƒcƒC[ƒg
+        //Spriteã‹ã‚‰å¤‰æ›ã—ã¦ç”»åƒãƒ„ã‚¤ãƒ¼ãƒˆ
         public static IEnumerator PostTweetWithMedia(string _text, Sprite _sprite, string consumerKey, string consumerSecret, AccessTokenResponse response, PostTweetCallback callback)
         {
             if (string.IsNullOrEmpty(_text) || _text.Length > 140)
@@ -423,111 +423,6 @@ namespace Twitter
                 }
             }
         }
-
-
-
-        //Image‚©‚ç•ÏŠ·‚µ‚Ä‰æ‘œƒcƒC[ƒg
-        public static IEnumerator PostTweetConvertImage(string text,Image image, string consumerKey, string consumerSecret, AccessTokenResponse response, PostTweetCallback callback)
-        {
-            if (string.IsNullOrEmpty(text) || text.Length > 140)
-            {
-                Debug.Log(string.Format("PostTweet - text[{0}] is empty or too long.", text));
-
-                callback(false);
-            }
-            else
-            {
-
-                Sprite _sprite = image.sprite;
-                Texture2D readableTexture = new Texture2D((int)_sprite.rect.width, (int)_sprite.rect.height);
-                readableTexture.ReadPixels(_sprite.textureRect, 0, 0);
-
-
-                var pixels = _sprite.texture.GetPixels((int)_sprite.textureRect.x,
-                                         (int)_sprite.textureRect.y,
-                                         (int)_sprite.textureRect.width,
-                                         (int)_sprite.textureRect.height);
-
-                readableTexture.SetPixels(pixels);
-                readableTexture.Apply();
-
-                byte[] bytes = readableTexture.EncodeToPNG();
-                var bs64 = Convert.ToBase64String(bytes);
-
-                Dictionary<string, string> mediaParameters = new Dictionary<string, string>
-                {
-                    { "media_data", bs64 }
-                };
-                WWWForm mediaForm = new WWWForm();
-                mediaForm.AddField("media_data", bs64);
-                var mediaHeaders = new Dictionary<string, string>();
-                mediaHeaders.Add("Authorization", GetHeaderWithAccessToken("POST", UploadMediaURL, consumerKey, consumerSecret, response, mediaParameters));
-                WWW mediaWeb = new WWW(UploadMediaURL, mediaForm.data, mediaHeaders);
-
-                yield return mediaWeb;
-
-                string media_id_string = "";
-                if (!string.IsNullOrEmpty(mediaWeb.error))
-                {
-                    Debug.Log(string.Format("PostMedia - failed. {0}\n{1}", mediaWeb.error, mediaWeb.text));
-                    callback(false);
-                    yield break;
-                }
-                else
-                {
-                    string error = Regex.Match(mediaWeb.text, @"<error>([^&]+)</error>").Groups[1].Value;
-
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Debug.Log(string.Format("PostTweet - failed. {0}", error));
-                        callback(false);
-                        yield break;
-                    }
-                    else
-                    {
-                        var res = JsonUtility.FromJson<mediaResponse>(mediaWeb.text);
-                        media_id_string = res.media_id_string;
-                    }
-                }
-
-                Dictionary<string, string> parameters = new Dictionary<string, string>
-                {
-                    { "status", text },
-                    { "media_ids", media_id_string }
-                };
-                WWWForm form = new WWWForm();
-                form.AddField("status", text);
-                form.AddField("media_ids", media_id_string);
-
-                // HTTP header
-                var headers = new Dictionary<string, string>();
-                headers.Add("Authorization", GetHeaderWithAccessToken("POST", PostTweetURL, consumerKey, consumerSecret, response, parameters));
-
-                WWW web = new WWW(PostTweetURL, form.data, headers);
-                yield return web;
-
-                if (!string.IsNullOrEmpty(web.error))
-                {
-                    Debug.Log(string.Format("PostTweet - failed. {0}\n{1}", web.error, web.text));
-                    callback(false);
-                }
-                else
-                {
-                    string error = Regex.Match(web.text, @"<error>([^&]+)</error>").Groups[1].Value;
-
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Debug.Log(string.Format("PostTweet - failed. {0}", error));
-                        callback(false);
-                    }
-                    else
-                    {
-                        callback(true);
-                    }
-                }
-            }
-        }
-
 
         #endregion
 
@@ -677,9 +572,7 @@ namespace Twitter
 
         private static string UrlEncode(string value)
         {
-            //value = Url.EscapeDataStinrg(value);‚ğƒRƒƒ“ƒgƒAƒEƒg‚µ‚ÄˆÈ‰º‚ğ‘‚«‚Ü‚·B
-
-            //ˆê•Ï”‚ğ—pˆÓ‚µ‚ÄƒRƒs[‚µAvalue‚ğ‚©‚ç‚É‚µ‚½Œã‚Ç‚ñ‚Ç‚ñ+=‚µ‚Ä‚¢‚­Š´‚¶‚Å‚·B
+            //ä¸€æ™‚å¤‰æ•°ã‚’ç”¨æ„ã—ã¦ã‚³ãƒ”ãƒ¼ã—ã€valueã‚’ã‹ã‚‰ã«ã—ãŸå¾Œã©ã‚“ã©ã‚“+=ã—ã¦ã„ãæ„Ÿã˜ã§ã™ã€‚
 
             string tmp = string.Copy(value);
             value = "";
@@ -737,7 +630,7 @@ namespace Twitter
     }
 }
 
-// ‚P‰ñ–Ú‚ÌƒŒƒXƒ|ƒ“ƒXJSON‚ğƒIƒuƒWƒFƒNƒg‚É•ÏŠ·‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+// ï¼‘å›ç›®ã®ãƒ¬ã‚¹ãƒãƒ³ã‚¹JSONã‚’ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 class mediaResponse
 {
     public long media_id = 0;
