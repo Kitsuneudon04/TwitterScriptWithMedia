@@ -13,8 +13,8 @@ public class TweetSprict : MonoBehaviour
 
     //アプリケーションの選別に使うコードです
     // Twitterアプリケーションをまだ作ってない人はここから設定をしてください http://dev.twitter.com/apps/new
-    public string CONSUMER_KEY = "LSS9vTXPJazjoUmIbGGqRchWi";
-    public string CONSUMER_SECRET = "TcVU4mTRXZFpeKElVlhxowz1fL71exokQ7SUFKOdxZfoKpioC9";
+    public string CONSUMER_KEY = "";
+    public string CONSUMER_SECRET = "";
 
 
     //ユーザー情報をここに格納します（編集しなくてもよいです）
